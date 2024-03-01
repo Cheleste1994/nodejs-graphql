@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLInputObjectType, GraphQLFloat } from 'graphql';
 import { UUIDType } from './uuid.js';
 import { ProfileTypes } from './profiles.js';
 import { PostsTypes } from './posts.js';
@@ -8,7 +8,7 @@ export const UserType = new GraphQLObjectType({
   fields: () => ({
     id: { type: UUIDType },
     name: { type: GraphQLString },
-    balance: { type: GraphQLInt },
+    balance: { type: GraphQLFloat },
     profile: {
       type: ProfileTypes,
       resolve: async ({ id }, _, { prisma }) => {
@@ -54,4 +54,30 @@ export const UserType = new GraphQLObjectType({
       },
     },
   }),
+});
+
+
+export const CreateUserInput = new GraphQLInputObjectType({
+  name: 'CreateUserInput',
+  fields: {
+    name: { type: GraphQLString },
+    balance: { type: GraphQLFloat },
+  },
+});
+
+export const ChangeUserInput = new GraphQLInputObjectType({
+  name: 'ChangeUserInput',
+  fields: {
+    name: { type: GraphQLString },
+    balance: { type: GraphQLFloat },
+  },
+});
+
+export const SubscribeTo = new GraphQLObjectType({
+  name: 'SubscribeTo',
+  fields: {
+    id: { type: UUIDType },
+    name: { type: GraphQLString },
+    balance: { type: GraphQLFloat },
+  },
 });
