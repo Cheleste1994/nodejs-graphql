@@ -7,12 +7,19 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
   graphql,
+  parse,
+  validate,
 } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { ChangeUserInput, CreateUserInput, UserType } from './types/user.js';
 import { MemberTypeIdScalar, MemberTypes } from './types/memberTypes.js';
 import { ChangePostInput, CreatePostInput, PostsTypes } from './types/posts.js';
-import { ChangeProfileInput, CreateProfileInput, ProfileTypes } from './types/profiles.js';
+import {
+  ChangeProfileInput,
+  CreateProfileInput,
+  ProfileTypes,
+} from './types/profiles.js';
+import depthLimit from 'graphql-depth-limit';
 
 const Query = new GraphQLObjectType({
   name: 'Query',
@@ -266,6 +273,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async handler(req) {
       const { query, variables } = req.body;
+
+      const arrErrors = validate(schema, parse(query), [depthLimit(5)]);
+
+      if (arrErrors.length) {
+        return { errors: arrErrors };
+      }
+
       const result = await graphql({
         schema,
         source: query,
